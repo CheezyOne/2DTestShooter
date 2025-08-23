@@ -8,7 +8,7 @@ public class CameraMovements : MonoBehaviour
 
     private Vector3 _targetPosition;
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         if (_player == null)
             return;
@@ -20,6 +20,6 @@ public class CameraMovements : MonoBehaviour
             z = _player.position.z,
         };
 
-        _camera.position = Vector3.Lerp(_camera.position, _targetPosition, _smoothSpeed * Time.fixedDeltaTime);
+        _camera.position = Vector3.Lerp(_camera.position, _targetPosition, _smoothSpeed * Time.deltaTime);
     }
 }

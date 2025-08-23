@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class Injector : MonoBehaviour
 {
-    [SerializeField] private PlayerMovements _player; //ћожно изменить на многократное создание игрока (воскрешение/клоны), но в “« ничего не указано => оставить так
+    [SerializeField] private PlayerMovements _playerMovements; //ћожно изменить на многократное создание игрока (воскрешение/клоны), но в “« ничего не указано => оставить так, но при необходимости создал бы событие создани€ игрока
     [SerializeField] private Joystick _joystick;
+    [SerializeField] private Camera _mainCamera;
 
 #if UNITY_EDITOR
     [SerializeField] private bool _isSimulatingMobile;
@@ -13,16 +14,16 @@ public class Injector : MonoBehaviour
     {
         if (Application.isMobilePlatform)
         {
-            _player.Initialize(new MobileInputService(_joystick));
+            _playerMovements.Initialize(new MobileInputService(_joystick), new MobileRotationService());
         }
         else
         {
-            _player.Initialize(new DesktopInputService());
+            _playerMovements.Initialize(new DesktopInputService(), new DesktopRotationService(_mainCamera));
         }
 
 #if UNITY_EDITOR
         if (_isSimulatingMobile)
-            _player.Initialize(new MobileInputService(_joystick));
+            _playerMovements.Initialize(new MobileInputService(_joystick),new MobileRotationService());
 #endif
     }
 }

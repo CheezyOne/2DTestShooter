@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class UIInputManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _joystick;
+    [SerializeField] private GameObject _mobileControls;
 
-    private void Start()
+    private void Awake()
     {
         SetupUIForMobile();
     }
 
     private void SetupUIForMobile()
     {
-        if (_joystick != null)
-            _joystick.SetActive(Application.isMobilePlatform);
+        if (_mobileControls != null)
+            _mobileControls.SetActive(Application.isMobilePlatform);
     }
 
 #if UNITY_EDITOR
