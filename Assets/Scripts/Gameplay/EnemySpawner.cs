@@ -1,16 +1,18 @@
 using UnityEngine;
+using System;
 using System.Collections;
+using Random = UnityEngine.Random;
 
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private Transform _player;
-    [SerializeField] private Enemy _enemyPrefab;
     [SerializeField] private Camera _camera;
     [SerializeField] private float _spawnDistanceMultiplier = 1.2f;
     [SerializeField] private Transform _enemiesHolder;
     [SerializeField] private Vector2 _worldSize;
     [SerializeField] private float _spawnHeight;
     [SerializeField] private float _spawnTime;
+    [SerializeField] private WeightedEnemy[] _weightedEnemies;
 
     private Coroutine _spawnEnemyRoutine;
     private WaitForSeconds _nextEnemySpawnWait;
@@ -42,8 +44,37 @@ public class EnemySpawner : MonoBehaviour
         }
         while (IsPositionInCameraView(spawnPosition));
 
-        Enemy newEnemy = Instantiate(_enemyPrefab, spawnPosition, Quaternion.identity, _enemiesHolder);
+        Enemy newEnemy = Instantiate(GetRandomEnemy(), spawnPosition, Quaternion.identity, _enemiesHolder);
         newEnemy.SetPlayer(_player);
+    }
+
+    private Enemy GetRandomEnemy()
+    {
+        float totalWeight = 0;
+
+        for(int i=0;i<_weightedEnemies.Length;i++)
+        {
+            totalWeight += _weightedEnemies[i].Weight;
+        }
+
+        float randomValue = Random.Range(0f, totalWeight);
+
+        for (int i = 0; i < _weightedEnemies.Length; i++)
+        {
+            float cumulativeWeight = 0f;
+
+            foreach (WeightedEnemy weightedEnemy in _weightedEnemies)
+            {
+                cumulativeWeight += weightedEnemy.Weight;
+
+                if (randomValue < cumulativeWeight)
+                {
+                    return weightedEnemy.Enemy;
+                }
+            }
+        }
+
+        return _weightedEnemies[_weightedEnemies.Length - 1].Enemy;
     }
 
     private Vector3 CalculateSpawnPosition()
@@ -156,4 +187,11 @@ public class EnemySpawner : MonoBehaviour
     {
         EventBus.OnPlayerDie -= StopSpawnEnemyRoutine;
     }
+}
+
+[Serializable]
+public struct WeightedEnemy
+{
+    public Enemy Enemy;
+    public float Weight;
 }

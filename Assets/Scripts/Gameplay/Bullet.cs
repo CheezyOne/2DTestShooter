@@ -1,18 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private Rigidbody _rigidbody;
+    [SerializeField] private float _bulletSpeed;
+    [SerializeField] private int _lifetime;
+
+    public Rigidbody Rigidbody => _rigidbody;
+    public float BulletSpeed => _bulletSpeed;
+
+    private float _damage;
+
+    private void Awake()
     {
-        
+        Destroy(gameObject, _lifetime);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetDamage(float damage)
     {
-        
+        _damage = damage;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.TryGetComponent(out EnemyHealth enemyHealth))
+        {
+            enemyHealth.TakeDamage(_damage);
+            Destroy(gameObject);
+        }
     }
 }

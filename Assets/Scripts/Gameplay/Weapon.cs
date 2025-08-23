@@ -1,40 +1,67 @@
 using UnityEngine;
-using TMPro;
 
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] private TMP_Text _ammoText;
     [SerializeField] private int _maxAmmoPerStore;
+    [SerializeField] private float _reloadingTime;
+    [SerializeField] private Transform _bulletsHolder;
+    [SerializeField] protected Transform _bulletSpawnPoint;
+    [SerializeField] protected Bullet _bullet;
+    [SerializeField] protected float _damage;
 
+    private bool _startingAmmoSet;
+    private bool _isReloading;
     private int _currentAmmo;
+    private float _reloadTimePassed;
 
-    private void Awake()
-    {
-        _currentAmmo = _maxAmmoPerStore;
-        SetAmmoText();
-    }
+    public int MaxAmmoPerStore => _maxAmmoPerStore;
+    public int CurrentAmmo => _currentAmmo;
 
-    private void Update()
+    public void Init()
     {
-        if (Application.isMobilePlatform)
+        if (_startingAmmoSet)
             return;
 
-        if (Input.GetMouseButtonDown(0))
-            Shoot();
+        _currentAmmo = _maxAmmoPerStore;
+        _startingAmmoSet = true;
     }
 
-    public void OnShootButton()
+    public void TryShoot()
     {
+        if (_isReloading)
+            return;
+
         Shoot();
     }
 
     protected virtual void Shoot()
     {
-        SetAmmoText();
+        _currentAmmo--;
+
+        if (_currentAmmo <= 0)
+            _isReloading = true;
     }
 
-    private void SetAmmoText()
-    { 
-        _ammoText.text = _currentAmmo + "/" + _maxAmmoPerStore;
+    protected void ShootBullet(Vector3 direction)
+    {
+        Bullet newBullet = Instantiate(_bullet, _bulletSpawnPoint.position, transform.rotation, _bulletsHolder);
+        newBullet.SetDamage(_damage);
+        newBullet.Rigidbody.AddForce(direction * _bullet.BulletSpeed);
+    }
+
+    private void Update()
+    {
+        if (!_isReloading)
+            return;
+
+        _reloadTimePassed += Time.deltaTime;
+
+        if(_reloadTimePassed >= _reloadingTime)
+        {
+            _reloadTimePassed = 0;
+            _isReloading = false;
+            _currentAmmo = _maxAmmoPerStore;
+            EventBus.OnReloadComplete?.Invoke();
+        }
     }
 }
