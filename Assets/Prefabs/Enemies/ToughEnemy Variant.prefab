@@ -9,12 +9,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1498592499614988673, guid: 32ab48a3098430c46939258940528f6a, type: 3}
+      propertyPath: _speed
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1498592499614988673, guid: 32ab48a3098430c46939258940528f6a, type: 3}
       propertyPath: _damage
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2569530675969971769, guid: 32ab48a3098430c46939258940528f6a, type: 3}
       propertyPath: m_Speed
-      value: 0.8
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4502087435366001048, guid: 32ab48a3098430c46939258940528f6a, type: 3}
       propertyPath: m_Materials.Array.data[0]

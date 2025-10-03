@@ -3,12 +3,13 @@ using UnityEngine.UI;
 
 public class Health : MonoBehaviour, IDamagable, IKillable
 {
-    [SerializeField] private float _maxHealth;
     [SerializeField] private Image _healthBarForeground;
 
-    private float _currentHealth;
+    [SerializeField] protected float _maxHealth;
 
-    private void Awake()
+    protected float _currentHealth;
+
+    private void OnEnable()
     {
         _currentHealth = _maxHealth;
     }

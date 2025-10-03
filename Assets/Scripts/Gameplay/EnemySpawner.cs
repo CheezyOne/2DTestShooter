@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using Random = UnityEngine.Random;
+using UnityEngine.AI;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -13,17 +14,25 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float _spawnHeight;
     [SerializeField] private float _spawnTime;
     [SerializeField] private WeightedEnemy[] _weightedEnemies;
+    [SerializeField] private int _firstWaveAmount;
+    [SerializeField] private int _waveIncreaseAmount;
+    [SerializeField] private float _navMeshRange = 1f;
+    [SerializeField] private LayerMask _obstacleLayers;
 
+    private const int MAX_SPAWN_ATTEMPTS = 16;
+
+    private int _enemiesKilledThisWave;
+    private int _waveIndex;
     private Coroutine _spawnEnemyRoutine;
     private WaitForSeconds _nextEnemySpawnWait;
 
     private void Awake()
     {
         _nextEnemySpawnWait = new WaitForSeconds(_spawnTime);
-        _spawnEnemyRoutine = StartCoroutine(SpawnEnemyRoutine());
+        _spawnEnemyRoutine = StartCoroutine(SpawnEnemiesRoutine());
     }
     
-    private IEnumerator SpawnEnemyRoutine()
+    private IEnumerator SpawnEnemiesRoutine()
     {
         while(true)
         {
@@ -35,17 +44,35 @@ public class EnemySpawner : MonoBehaviour
     private void SpawnEnemy()
     {
         Vector3 spawnPosition;
+        int attempts = 0;
 
         do
         {
             spawnPosition = CalculateSpawnPosition();
             spawnPosition.x = Mathf.Clamp(spawnPosition.x, -_worldSize.x / 2, _worldSize.x / 2);
             spawnPosition.z = Mathf.Clamp(spawnPosition.z, -_worldSize.y / 2, _worldSize.y / 2);
-        }
-        while (IsPositionInCameraView(spawnPosition));
+            attempts++;
 
-        Enemy newEnemy = Instantiate(GetRandomEnemy(), spawnPosition, Quaternion.identity, _enemiesHolder);
+            if (attempts == MAX_SPAWN_ATTEMPTS)
+            {
+                Debug.LogWarning("Couldn't spawn enemy");
+                return;
+            }
+        }
+        while ((IsPositionInCameraView(spawnPosition) || !IsPositionValid(spawnPosition)) && attempts < MAX_SPAWN_ATTEMPTS);
+
+        Enemy newEnemy = PoolManager.Instance.InstantiateObject(GetRandomEnemy(), spawnPosition, Quaternion.identity, _enemiesHolder);
         newEnemy.SetPlayer(_player);
+    }
+
+    private bool IsPositionValid(Vector3 position)
+    {
+        if (!NavMesh.SamplePosition(position, out NavMeshHit hit, _navMeshRange, NavMesh.AllAreas))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private Enemy GetRandomEnemy()
@@ -84,13 +111,11 @@ public class EnemySpawner : MonoBehaviour
         float expandedHeight = cameraBounds.size.z * _spawnDistanceMultiplier;
         Vector3 cameraCenter = cameraBounds.center;
 
-        // ќпредел€ем безопасные зоны спавна (вне видимости)
         float leftBound = cameraCenter.x - expandedWidth / 2;
         float rightBound = cameraCenter.x + expandedWidth / 2;
         float topBound = cameraCenter.z + expandedHeight / 2;
         float bottomBound = cameraCenter.z - expandedHeight / 2;
 
-        // ¬ыбираем случайную сторону дл€ спавна
         int side = Random.Range(0, 4);
         Vector3 spawnPos;
 

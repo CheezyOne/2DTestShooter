@@ -3,8 +3,11 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] private Rigidbody _rigidbody;
+    [SerializeField] private TrailRenderer _trail;
     [SerializeField] private float _bulletSpeed;
     [SerializeField] private int _lifetime;
+
+    private bool _isHit;
 
     public Rigidbody Rigidbody => _rigidbody;
     public float BulletSpeed => _bulletSpeed;
@@ -13,7 +16,7 @@ public class Bullet : MonoBehaviour
 
     private void Awake()
     {
-        Destroy(gameObject, _lifetime);
+        PoolManager.Instance.DestroyObject(gameObject, _lifetime);
     }
 
     public void SetDamage(float damage)
@@ -23,10 +26,23 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.TryGetComponent(out EnemyHealth enemyHealth))
+        if (_isHit)
+            return;
+
+        _isHit = true;
+
+        if (other.TryGetComponent(out EnemyHealth enemyHealth))
         {
             enemyHealth.TakeDamage(_damage);
-            Destroy(gameObject);
         }
+
+        PoolManager.Instance.DestroyObject(gameObject);
+    }
+
+    private void OnDisable()
+    {
+        _trail.Clear();
+        _isHit = false;
+        _rigidbody.velocity = Vector3.zero;
     }
 }

@@ -8,21 +8,21 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _damage;
     [SerializeField] private NavMeshAgent _agent;
     [SerializeField] private float _attackRange;
+    [SerializeField] private float _rotationSpeed;
+    [SerializeField] private float _stopAttackRange;
     [SerializeField] private float _attackRate;
     [SerializeField] private float _destinationCheckTime;
 
     private Transform _player;
     private Rigidbody _playerRigidbody;
     private PlayerHealth _playerHealth;
-    private WaitForSeconds _attackWait;
     private WaitForSeconds _destinationWait;
-    private Coroutine _attackRoutine;
     private Coroutine _destinationRoutine;
     private bool _isAttacking;
+    private float _attackTime;
 
-    private void Start()
+    private void Awake()
     {
-        _attackWait = new WaitForSeconds(_attackRate);
         _destinationWait = new WaitForSeconds(_destinationCheckTime);
     }
 
@@ -58,38 +58,33 @@ public class Enemy : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
-        if (distanceToPlayer <= _attackRange-0.1f && !_isAttacking)
+        if (distanceToPlayer <= _attackRange && !_isAttacking)
         {
-            StartAttack();
+            _agent.isStopped = true;
+            _isAttacking = true;
+            return;
         }
-        else if (distanceToPlayer > _attackRange+0.1f && _isAttacking)
+        
+        if (distanceToPlayer > _attackRange && _isAttacking)
         {
-            StopAttack();
+            _attackTime = 0;
+            _agent.isStopped = false;
+            _isAttacking = false;
+            return;
         }
-    }
 
-    private void StartAttack()
-    {
-        _isAttacking = true;
-        _agent.isStopped = true; 
-        _attackRoutine = StartCoroutine(AttackRoutine());
-    }
-
-    private void StopAttack()
-    {
-        _isAttacking = false;
-        _agent.isStopped = false; 
-
-        if (_attackRoutine != null)
-            StopCoroutine(_attackRoutine);
-    }
-
-    private IEnumerator AttackRoutine()
-    {
-        while (_isAttacking && _playerHealth != null)
+        if(_isAttacking)
         {
-            AttackPlayer();
-            yield return _attackWait;
+            Vector3 direction = (_player.position - transform.position).normalized;
+            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * _rotationSpeed);
+            _attackTime += Time.deltaTime;
+
+            if(_attackTime>=_attackRate)
+            {
+                _attackTime = 0;
+                AttackPlayer();
+            }
         }
     }
 

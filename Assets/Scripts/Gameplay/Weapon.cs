@@ -1,13 +1,14 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Weapon : MonoBehaviour
 {
     [SerializeField] private int _maxAmmoPerStore;
     [SerializeField] private float _reloadingTime;
-    [SerializeField] private Transform _bulletsHolder;
     [SerializeField] protected Transform _bulletSpawnPoint;
     [SerializeField] protected Bullet _bullet;
     [SerializeField] protected float _damage;
+    [SerializeField] private Image _reloadImage;
 
     private bool _startingAmmoSet;
     private bool _isReloading;
@@ -44,7 +45,8 @@ public class Weapon : MonoBehaviour
 
     protected void ShootBullet(Vector3 direction)
     {
-        Bullet newBullet = Instantiate(_bullet, _bulletSpawnPoint.position, transform.rotation, _bulletsHolder);
+        Debug.Log("Shoot");
+        Bullet newBullet = PoolManager.Instance.InstantiateObject(_bullet, _bulletSpawnPoint.position, transform.rotation);
         newBullet.SetDamage(_damage);
         newBullet.Rigidbody.AddForce(direction * _bullet.BulletSpeed);
     }
@@ -55,13 +57,21 @@ public class Weapon : MonoBehaviour
             return;
 
         _reloadTimePassed += Time.deltaTime;
+        _reloadImage.fillAmount = _reloadTimePassed / _reloadingTime;
 
-        if(_reloadTimePassed >= _reloadingTime)
+        if (_reloadTimePassed >= _reloadingTime)
         {
+            _reloadImage.fillAmount = 0;
             _reloadTimePassed = 0;
             _isReloading = false;
             _currentAmmo = _maxAmmoPerStore;
             EventBus.OnReloadComplete?.Invoke();
         }
+    }
+
+    private void OnDisable()
+    {
+        _reloadImage.fillAmount = 0;
+        _reloadTimePassed = 0;
     }
 }
