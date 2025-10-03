@@ -1,10 +1,9 @@
 using UnityEngine;
 using System;
-using System.Collections;
 using Random = UnityEngine.Random;
 using UnityEngine.AI;
 
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawner : Singleton<EnemySpawner>
 {
     [SerializeField] private Transform _player;
     [SerializeField] private Camera _camera;
@@ -12,7 +11,6 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private Transform _enemiesHolder;
     [SerializeField] private Vector2 _worldSize;
     [SerializeField] private float _spawnHeight;
-    [SerializeField] private float _spawnTime;
     [SerializeField] private WeightedEnemy[] _weightedEnemies;
     [SerializeField] private int _firstWaveAmount;
     [SerializeField] private int _waveIncreaseAmount;
@@ -21,23 +19,26 @@ public class EnemySpawner : MonoBehaviour
 
     private const int MAX_SPAWN_ATTEMPTS = 16;
 
+    private int _enemiesThisWave;
     private int _enemiesKilledThisWave;
     private int _waveIndex;
-    private Coroutine _spawnEnemyRoutine;
-    private WaitForSeconds _nextEnemySpawnWait;
 
-    private void Awake()
+    public int WaveIndex => _waveIndex;
+    public int EnemiesLeftThisWave => _enemiesThisWave - _enemiesKilledThisWave;
+
+    protected override void Awake()
     {
-        _nextEnemySpawnWait = new WaitForSeconds(_spawnTime);
-        _spawnEnemyRoutine = StartCoroutine(SpawnEnemiesRoutine());
+        base.Awake();
+        SpawnWave();
     }
-    
-    private IEnumerator SpawnEnemiesRoutine()
+
+    private void SpawnWave()
     {
-        while(true)
+        _enemiesThisWave = _firstWaveAmount + _waveIncreaseAmount * _waveIndex;
+
+        for(int i =0;i< _enemiesThisWave; i++)
         {
             SpawnEnemy();
-            yield return _nextEnemySpawnWait;
         }
     }
 
@@ -198,19 +199,26 @@ public class EnemySpawner : MonoBehaviour
                viewportPoint.y >= 0 && viewportPoint.y <= 1;
     }
 
-    private void StopSpawnEnemyRoutine()
+    private void OnEnemyDie()
     {
-        StopCoroutine(_spawnEnemyRoutine);
+        _enemiesKilledThisWave++;
+
+        if(_enemiesKilledThisWave == _enemiesThisWave)
+        {
+            _enemiesKilledThisWave = 0;
+            _waveIndex++;
+            SpawnWave();
+        }
     }
 
     private void OnEnable()
     {
-        EventBus.OnPlayerDie += StopSpawnEnemyRoutine;
+        EventBus.OnEnemyDie += OnEnemyDie;
     }
 
     private void OnDisable()
     {
-        EventBus.OnPlayerDie -= StopSpawnEnemyRoutine;
+        EventBus.OnEnemyDie -= OnEnemyDie;
     }
 }
 

@@ -8,6 +8,7 @@ public class EnemyHealth : Health
     {
         PoolManager.Instance.InstantiateObject(_deathEffect, transform.position, Quaternion.identity);
         PoolManager.Instance.DestroyObject(gameObject);
+        EventBus.OnEnemyDie?.Invoke();
     }
 
     private void OnDisable()

@@ -1,12 +1,13 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using TMPro;
 
 public class LoseWindow : BaseWindow
 {
-    [SerializeField] private string _gameplaySceneName;
+    [SerializeField] private TMP_Text _lastWaveNumber;
 
-    public void OnRestartButton()
+    public override void Init()
     {
-        SceneManager.LoadScene(_gameplaySceneName);
+        base.Init();
+        _lastWaveNumber.text = (EnemySpawner.Instance.WaveIndex+1).ToString();
     }
 }
