@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class GameName : MonoBehaviour
 {
@@ -7,6 +8,6 @@ public class GameName : MonoBehaviour
 
     private void Awake()
     {
-        
+        transform.DOMoveY(transform.position.y - _yDistance, _animationTime).SetLoops(-1, LoopType.Yoyo);
     }
 }

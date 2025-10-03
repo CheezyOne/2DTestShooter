@@ -31,9 +31,9 @@ public class Bullet : MonoBehaviour
 
         _isHit = true;
 
-        if (other.TryGetComponent(out EnemyHealth enemyHealth))
+        if (other.TryGetComponent(out Health health))
         {
-            enemyHealth.TakeDamage(_damage);
+            health.TakeDamage(_damage);
         }
 
         PoolManager.Instance.DestroyObject(gameObject);

@@ -3505,6 +3505,8 @@ MonoBehaviour:
     Weight: 15
   - Enemy: {fileID: 4662229717971160870, guid: e55a6a5942a218441a90308632713222, type: 3}
     Weight: 5
+  - Enemy: {fileID: 6980197527943464431, guid: f33532a2ac78e554cbd8ad066e07a5ee, type: 3}
+    Weight: 12222
   _firstWaveAmount: 0
   _waveIncreaseAmount: 0
   _navMeshRange: 3

@@ -13,13 +13,14 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _attackRate;
     [SerializeField] private float _destinationCheckTime;
 
-    private Transform _player;
     private Rigidbody _playerRigidbody;
     private PlayerHealth _playerHealth;
     private WaitForSeconds _destinationWait;
     private Coroutine _destinationRoutine;
     private bool _isAttacking;
     private float _attackTime;
+
+    protected Transform _player;
 
     private void Awake()
     {
@@ -88,13 +89,12 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void AttackPlayer()
+    protected virtual void AttackPlayer()
     {
         if (_playerHealth == null)
             return;
 
         _playerHealth.TakeDamage(_damage);
-
         Vector3 knockbackDirection = (_player.position - transform.position).normalized;
         knockbackDirection.y = 0;
         _playerRigidbody.AddForce(knockbackDirection * _pushForce, ForceMode.Impulse);
