@@ -1,5 +1,5 @@
 # EffectiveMobileTest
-Effective mobile test game
+Effective mobile test game (3D arena with waves of enemies)
 
 Unity version - 2022.3.47f1
 
