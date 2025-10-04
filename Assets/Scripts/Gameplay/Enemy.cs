@@ -74,14 +74,15 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        if(_isAttacking)
+        _attackTime += Time.deltaTime;
+
+        if (_isAttacking)
         {
             Vector3 direction = (_player.position - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * _rotationSpeed);
-            _attackTime += Time.deltaTime;
 
-            if(_attackTime>=_attackRate)
+            if(_attackTime >= _attackRate)
             {
                 _attackTime = 0;
                 AttackPlayer();

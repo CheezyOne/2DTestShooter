@@ -327,6 +327,10 @@ PrefabInstance:
       propertyPath: _stopAttackRange
       value: 16
       objectReference: {fileID: 0}
+    - target: {fileID: 2569530675969971769, guid: 32ab48a3098430c46939258940528f6a, type: 3}
+      propertyPath: m_Speed
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7569013584365736855, guid: 32ab48a3098430c46939258940528f6a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.68

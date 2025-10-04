@@ -8,6 +8,7 @@ public class PlayerWeapon : MonoBehaviour
 
     private Weapon _currentWeapon;
     private int _weaponIndex = 0;
+    private bool _isShootingDisabled;
 
     private void Awake()
     {
@@ -51,6 +52,9 @@ public class PlayerWeapon : MonoBehaviour
 
     private void Update()
     {
+        if (_isShootingDisabled)
+            return;
+
         if (Application.isMobilePlatform)
             return;
 
@@ -66,13 +70,27 @@ public class PlayerWeapon : MonoBehaviour
         _ammoText.text = _currentWeapon.CurrentAmmo + "/" + _currentWeapon.MaxAmmoPerStore;
     }
 
+    private void DisableShooting()
+    {
+        _isShootingDisabled = true;
+    }
+
+    private void EnableShooting()
+    {
+        _isShootingDisabled = false;
+    }
+
     private void OnEnable()
     {
+        EventBus.OnUpgradeWindowClose += EnableShooting;
+        EventBus.OnUpgradeWindowOpen += DisableShooting;
         EventBus.OnReloadComplete += SetAmmoText;
     }
 
     private void OnDisable()
-    {   
+    {
+        EventBus.OnUpgradeWindowClose -= EnableShooting;
+        EventBus.OnUpgradeWindowOpen -= DisableShooting;
         EventBus.OnReloadComplete -= SetAmmoText;
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class PlayerMovements : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
+    [SerializeField] private float _moveSpeedIncreaseStep;
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private LayerMask[] _obstaclesLayers;
@@ -13,6 +14,7 @@ public class PlayerMovements : MonoBehaviour
     private IRotationService _rotationService;
     private LayerMask _combinedObstaclesMask;
     private List<ContactPoint> _collisionContacts = new List<ContactPoint>();
+    private bool _isMovementDisabled;
 
     private const float MINIMAL_MAGNITUDE_THRESHOLD = 0.1f;
 
@@ -24,6 +26,9 @@ public class PlayerMovements : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if(_isMovementDisabled)
+            return;
+        
         HandleMovement();
         HandleRotation();
     }
@@ -36,6 +41,7 @@ public class PlayerMovements : MonoBehaviour
     private void UpdateCombinedObstaclesMask()
     {
         _combinedObstaclesMask = 0;
+
         foreach (LayerMask layer in _obstaclesLayers)
         {
             _combinedObstaclesMask |= layer;
@@ -101,5 +107,34 @@ public class PlayerMovements : MonoBehaviour
             Quaternion targetRotation = _rotationService.GetRotation(_movement, _playerTransform.position);
             _rigidbody.MoveRotation(targetRotation);
         }
+    }
+
+    private void DisableMovements()
+    {
+        _isMovementDisabled = true;
+    }
+
+    private void EnableMovements()
+    {
+        _isMovementDisabled = false;
+    }
+
+    private void IncreaseMoveSpeed()
+    {
+        _moveSpeed += _moveSpeedIncreaseStep;
+    }
+
+    private void OnEnable()
+    {
+        EventBus.OnUpgradeWindowClose += EnableMovements;
+        EventBus.OnUpgradeWindowOpen += DisableMovements;
+        EventBus.OnPlayerSpeedIncreased += IncreaseMoveSpeed;
+    }
+
+    private void OnDisable()
+    {
+        EventBus.OnUpgradeWindowClose -= EnableMovements;
+        EventBus.OnUpgradeWindowOpen -= DisableMovements;
+        EventBus.OnPlayerSpeedIncreased -= IncreaseMoveSpeed;
     }
 }

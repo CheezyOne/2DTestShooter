@@ -45,7 +45,6 @@ public class Weapon : MonoBehaviour
 
     protected void ShootBullet(Vector3 direction)
     {
-        Debug.Log("Shoot");
         Bullet newBullet = PoolManager.Instance.InstantiateObject(_bullet, _bulletSpawnPoint.position, transform.rotation);
         newBullet.SetDamage(_damage);
         newBullet.Rigidbody.AddForce(direction * _bullet.BulletSpeed);

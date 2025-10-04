@@ -32,7 +32,7 @@ public class EnemySpawner : Singleton<EnemySpawner>
         SpawnWave();
     }
 
-    private void SpawnWave()
+    public void SpawnWave()
     {
         _enemiesThisWave = _firstWaveAmount + _waveIncreaseAmount * _waveIndex;
 
@@ -207,7 +207,7 @@ public class EnemySpawner : Singleton<EnemySpawner>
         {
             _enemiesKilledThisWave = 0;
             _waveIndex++;
-            SpawnWave();
+            UpgradesManager.Instance.SetUpgrades();
         }
     }
 
