@@ -5,9 +5,11 @@ public class PlayerMovements : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _moveSpeedIncreaseStep;
+    [SerializeField] private float _rotationSpeed;
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private LayerMask[] _obstaclesLayers;
+    [SerializeField] private Camera _playerCamera;
 
     private Vector3 _movement;
     private IInputService _inputService;
@@ -15,6 +17,11 @@ public class PlayerMovements : MonoBehaviour
     private LayerMask _combinedObstaclesMask;
     private List<ContactPoint> _collisionContacts = new List<ContactPoint>();
     private bool _isMovementDisabled;
+
+    private Vector3 _cachedCameraForward;
+    private Vector3 _cachedCameraRight;
+    private float _cameraUpdateTimer;
+    private const float CAMERA_UPDATE_INTERVAL = 0.1f;
 
     private const float MINIMAL_MAGNITUDE_THRESHOLD = 0.1f;
 
@@ -26,9 +33,10 @@ public class PlayerMovements : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(_isMovementDisabled)
+        if (_isMovementDisabled)
             return;
-        
+
+        UpdateCameraDirections();
         HandleMovement();
         HandleRotation();
     }
@@ -36,6 +44,29 @@ public class PlayerMovements : MonoBehaviour
     private void Awake()
     {
         UpdateCombinedObstaclesMask();
+        UpdateCameraDirectionsImmediate();
+    }
+
+    private void UpdateCameraDirections()
+    {
+        _cameraUpdateTimer += Time.fixedDeltaTime;
+
+        if (_cameraUpdateTimer >= CAMERA_UPDATE_INTERVAL)
+        {
+            UpdateCameraDirectionsImmediate();
+            _cameraUpdateTimer = 0f;
+        }
+    }
+
+    private void UpdateCameraDirectionsImmediate()
+    {
+        _cachedCameraForward = _playerCamera.transform.forward;
+        _cachedCameraForward.y = 0;
+        _cachedCameraForward.Normalize();
+
+        _cachedCameraRight = _playerCamera.transform.right;
+        _cachedCameraRight.y = 0;
+        _cachedCameraRight.Normalize();
     }
 
     private void UpdateCombinedObstaclesMask()
@@ -58,8 +89,9 @@ public class PlayerMovements : MonoBehaviour
 
     private void HandleMovement()
     {
-        Vector3 direction = _inputService.GetMovementDirection();
-        _movement = new Vector3(direction.x, 0, direction.z).normalized;
+        Vector3 inputDirection = _inputService.GetMovementDirection();
+        Vector3 cameraRelativeDirection = _cachedCameraForward * inputDirection.z + _cachedCameraRight * inputDirection.x;
+        _movement = cameraRelativeDirection.normalized;
         Vector3 targetVelocity = _movement * _moveSpeed;
 
         if (_collisionContacts.Count > 0)
@@ -105,18 +137,37 @@ public class PlayerMovements : MonoBehaviour
         if (_movement != Vector3.zero || _rotationService is DesktopRotationService)
         {
             Quaternion targetRotation = _rotationService.GetRotation(_movement, _playerTransform.position);
-            _rigidbody.MoveRotation(targetRotation);
+
+            Quaternion smoothedRotation = Quaternion.Slerp(
+                _rigidbody.rotation,
+                targetRotation,
+                Time.fixedDeltaTime * _rotationSpeed
+            );
+
+            _rigidbody.MoveRotation(smoothedRotation);
         }
     }
 
     private void DisableMovements()
     {
         _isMovementDisabled = true;
+
+        if (_rotationService is DesktopRotationService)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 
     private void EnableMovements()
     {
         _isMovementDisabled = false;
+
+        if(_rotationService is DesktopRotationService)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     private void IncreaseMoveSpeed()

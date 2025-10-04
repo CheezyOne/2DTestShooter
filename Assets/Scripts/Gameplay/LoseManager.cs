@@ -16,6 +16,8 @@ public class LoseManager : MonoBehaviour
 
     private void OnPlayerDie()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         SoundsManager.Instance.PlaySound(SoundType.Lose);
         WindowsManager.Instance.OpenWindow(_loseWindow);
     }

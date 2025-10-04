@@ -9,31 +9,30 @@ public interface IRotationService
 public class DesktopRotationService : IRotationService
 {
     private Camera _camera;
+    private float _mouseSensitivity = 2f;
+    private float _rotationY = 0f;
+    private bool _isInitialized = false;
 
     public DesktopRotationService(Camera camera)
     {
         _camera = camera;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public Quaternion GetRotation(Vector3 movementDirection, Vector3 playerPosition)
     {
-        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-        float rayDistance;
+        float mouseX = Input.GetAxis("Mouse X") * _mouseSensitivity;
 
-        if (groundPlane.Raycast(ray, out rayDistance))
+        if (!_isInitialized)
         {
-            Vector3 point = ray.GetPoint(rayDistance);
-            Vector3 direction = point - playerPosition;
-            direction.y = 0; 
-
-            if (direction != Vector3.zero)
-            {
-                return Quaternion.LookRotation(direction);
-            }
+            _rotationY = _camera.transform.eulerAngles.y;
+            _isInitialized = true;
         }
 
-        return Quaternion.identity;
+        _rotationY += mouseX;
+        _rotationY %= 360f;
+        return Quaternion.Euler(0f, _rotationY, 0f);
     }
 }
 

@@ -72,14 +72,17 @@ public class PoolManager : Singleton<PoolManager>
 
     public void DestroyObject(GameObject objectToReturn, float delay = 0)
     {
+        if (objectToReturn == null || !objectToReturn.activeInHierarchy)
+            return;
+
         if (_activeCoroutines.ContainsKey(objectToReturn))
         {
             StopCoroutine(_activeCoroutines[objectToReturn]);
+            _activeCoroutines.Remove(objectToReturn);
         }
 
         if (delay == 0)
         {
-            _activeCoroutines.Remove(objectToReturn);
             ReturnObjectToPool(objectToReturn);
         }
         else
@@ -91,31 +94,22 @@ public class PoolManager : Singleton<PoolManager>
 
     private void ReturnObjectToPool(GameObject objectToReturn)
     {
-        if (_activeCoroutines.ContainsKey(objectToReturn))
-        {
-            _activeCoroutines.Remove(objectToReturn);
-        }
+        if (objectToReturn == null) 
+            return;
 
-        string realObjectName = objectToReturn.name.Substring(0, objectToReturn.name.Length - 7); //Deletes "(Clone)"
-        ObjectPool pool = null;
-
-        foreach (ObjectPool objectPool in _objectPools)
-        {
-            if (objectPool.PoolName == realObjectName)
-            {
-                pool = objectPool;
-                break;
-            }
-        }
+        string realObjectName = objectToReturn.name.Replace("(Clone)", ""); 
+        ObjectPool pool = _objectPools.FirstOrDefault(p => p.PoolName == realObjectName);
 
         if (pool == null)
         {
-            Debug.LogWarning("There's no such pool");
+            Debug.LogWarning($"There's no pool for: {realObjectName}");
+            Destroy(objectToReturn); 
         }
         else
         {
             objectToReturn.SetActive(false);
-            pool.InactiveObjects.Add(objectToReturn);
+            if (!pool.InactiveObjects.Contains(objectToReturn))
+                pool.InactiveObjects.Add(objectToReturn);
         }
     }
 

@@ -10,6 +10,9 @@ public class Weapon : MonoBehaviour
     [SerializeField] protected float _damage;
     [SerializeField] private Image _reloadImage;
     [SerializeField] private SoundType _shootSound;
+    [SerializeField] private LineRenderer _laserSight;
+    [SerializeField] private float _laserMaxDistance;
+    [SerializeField] private LayerMask _laserHitLayers;
 
     private bool _startingAmmoSet;
     private bool _isReloading;
@@ -26,6 +29,34 @@ public class Weapon : MonoBehaviour
 
         _currentAmmo = _maxAmmoPerStore;
         _startingAmmoSet = true;
+    }
+
+    public void EnableLaserSight(bool enable)
+    {
+        if (_laserSight != null)
+        {
+            _laserSight.enabled = enable;
+        }
+    }
+
+    private void UpdateLaserSight()
+    {
+        Vector3 laserDirection = _bulletSpawnPoint.forward;
+        Vector3 startPoint = _bulletSpawnPoint.position;
+        Vector3 endPoint;
+        RaycastHit hit;
+
+        if (Physics.Raycast(startPoint, laserDirection, out hit, _laserMaxDistance, _laserHitLayers))
+        {
+            endPoint = hit.point;
+        }
+        else
+        {
+            endPoint = startPoint + laserDirection * _laserMaxDistance;
+        }
+
+        _laserSight.SetPosition(0, startPoint);
+        _laserSight.SetPosition(1, endPoint);
     }
 
     public void TryShoot()
@@ -54,6 +85,9 @@ public class Weapon : MonoBehaviour
 
     private void Update()
     {
+        if(_laserSight!=null)
+            UpdateLaserSight();
+
         if (!_isReloading)
             return;
 
@@ -70,8 +104,14 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        EnableLaserSight(true);
+    }
+
     private void OnDisable()
     {
+        EnableLaserSight(false);
         _reloadImage.fillAmount = 0;
         _reloadTimePassed = 0;
     }

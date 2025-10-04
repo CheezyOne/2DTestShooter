@@ -30,14 +30,13 @@ public class Bullet : MonoBehaviour
             return;
 
         _isHit = true;
+        PoolManager.Instance.DestroyObject(gameObject);
 
         if (other.TryGetComponent(out Health health))
         {
             SoundsManager.Instance.PlaySound(SoundType.Hit);
             health.TakeDamage(_damage);
         }
-
-        PoolManager.Instance.DestroyObject(gameObject);
     }
 
     private void OnDisable()
