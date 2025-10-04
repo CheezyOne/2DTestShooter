@@ -169,7 +169,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 90}
-  m_SizeDelta: {x: 640, y: 300}
+  m_SizeDelta: {x: 600, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1158691989429672490
 CanvasRenderer:
@@ -303,7 +303,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 90}
-  m_SizeDelta: {x: 640, y: 300}
+  m_SizeDelta: {x: 600, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &131298316347509860
 CanvasRenderer:
@@ -587,7 +587,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 709c852a33b519040bb211bf43e84cde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _upgradeWindow: {fileID: 8955121580025659148}
   _descriptionText: {fileID: 8390722592377667440}
   _currentLevelText: {fileID: 3124890555219540836}
 --- !u!222 &4760830712841583140
@@ -1393,7 +1392,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 709c852a33b519040bb211bf43e84cde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _upgradeWindow: {fileID: 8955121580025659148}
   _descriptionText: {fileID: 8471788367272590171}
   _currentLevelText: {fileID: 5372305419147870836}
 --- !u!1 &6052291844310727993
@@ -1564,7 +1562,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 90}
-  m_SizeDelta: {x: 640, y: 300}
+  m_SizeDelta: {x: 600, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6764944627572872568
 CanvasRenderer:
@@ -1970,32 +1968,6 @@ MonoBehaviour:
   - {fileID: 6368925427249612286}
   - {fileID: 6721496217031585373}
   - {fileID: 5335624290862353017}
-  _upgradeInfos:
-  - CurrentLevel: 0
-    MaxLevel: 5
-    Description: "\u041F\u0435\u0440\u0441\u043E\u043D\u0430\u0436 \u043F\u043E\u043B\u0443\u0447\u0438\u0442
-      \u0441\u0432\u043E\u0451 \u043C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u043E\u0435
-      \u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435 (\u044D\u0442\u043E \u0443\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435
-      \u043C\u043E\u0436\u043D\u043E \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C
-      5 \u0440\u0430\u0437)"
-    UpgradeType: 0
-  - CurrentLevel: 0
-    MaxLevel: 3
-    Description: "\u041F\u0435\u0440\u0441\u043E\u043D\u0430\u0436 \u0441\u0442\u0430\u043D\u0435\u0442
-      \u043D\u0435\u043C\u043D\u043E\u0433\u043E \u0431\u044B\u0441\u0442\u0440\u0435\u0435
-      (\u044D\u0442\u043E \u0443\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435
-      \u043C\u043E\u0436\u043D\u043E \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C
-      3 \u0440\u0430\u0437\u0430) "
-    UpgradeType: 1
-  - CurrentLevel: 0
-    MaxLevel: 7
-    Description: "\u041F\u0435\u0440\u0441\u043E\u043D\u0430\u0436 \u0443\u0432\u0435\u043B\u0438\u0447\u0438\u0442
-      \u0441\u0432\u043E\u0439 \u043C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439
-      \u0437\u0430\u043F\u0430\u0441 \u0437\u0434\u043E\u0440\u043E\u0432\u044C\u044F
-      (\u044D\u0442\u043E \u0443\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435
-      \u043C\u043E\u0436\u043D\u043E \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C
-      7 \u0440\u0430\u0437)"
-    UpgradeType: 2
 --- !u!1 &9044625891168337385
 GameObject:
   m_ObjectHideFlags: 0
@@ -2047,6 +2019,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 709c852a33b519040bb211bf43e84cde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _upgradeWindow: {fileID: 8955121580025659148}
   _descriptionText: {fileID: 3558804011136561242}
   _currentLevelText: {fileID: 8686338244906783279}

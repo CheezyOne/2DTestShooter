@@ -19,8 +19,10 @@ public class SoundsManager : Singleton<SoundsManager>
 
     private WaitForSeconds _waitForCoolDown = new (0.1f);
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
+
         foreach (SoundsData soundData in _soundsDatas)
             _soundIdPairs.Add(soundData.SoundType, soundData.AudioClipData);
     }
