@@ -123,7 +123,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 3007894854188748873}
   _trail: {fileID: 5510171097969371075}
   _bulletSpeed: 1000
-  _lifetime: 5
+  _lifetime: 2
 --- !u!54 &3007894854188748873
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -35,6 +35,7 @@ public class EnemySpawner : Singleton<EnemySpawner>
     public void SpawnWave()
     {
         _enemiesThisWave = _firstWaveAmount + _waveIncreaseAmount * _waveIndex;
+        SoundsManager.Instance.PlaySound(SoundType.NewWave);
 
         for(int i =0;i< _enemiesThisWave; i++)
         {

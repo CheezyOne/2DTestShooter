@@ -23,7 +23,7 @@ public class Health : MonoBehaviour, IDamagable, IKillable
 
         if (_currentHealth <= 0)
         {
-            _currentHealth = 0;
+            _currentHealth = 0; 
             Die();
         }
 

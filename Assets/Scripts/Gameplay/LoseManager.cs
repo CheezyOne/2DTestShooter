@@ -16,6 +16,7 @@ public class LoseManager : MonoBehaviour
 
     private void OnPlayerDie()
     {
+        SoundsManager.Instance.PlaySound(SoundType.Lose);
         WindowsManager.Instance.OpenWindow(_loseWindow);
     }
 }

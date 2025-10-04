@@ -33,6 +33,7 @@ public class Bullet : MonoBehaviour
 
         if (other.TryGetComponent(out Health health))
         {
+            SoundsManager.Instance.PlaySound(SoundType.Hit);
             health.TakeDamage(_damage);
         }
 

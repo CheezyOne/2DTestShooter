@@ -9,6 +9,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] protected Bullet _bullet;
     [SerializeField] protected float _damage;
     [SerializeField] private Image _reloadImage;
+    [SerializeField] private SoundType _shootSound;
 
     private bool _startingAmmoSet;
     private bool _isReloading;
@@ -38,6 +39,7 @@ public class Weapon : MonoBehaviour
     protected virtual void Shoot()
     {
         _currentAmmo--;
+        SoundsManager.Instance.PlaySound(_shootSound);
 
         if (_currentAmmo <= 0)
             _isReloading = true;

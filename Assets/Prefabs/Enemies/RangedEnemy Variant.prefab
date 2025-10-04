@@ -311,6 +311,7 @@ MonoBehaviour:
   _bullet: {fileID: 7155928078378936904, guid: 177ac7bcb870dc64fbfbde54c5fe647b, type: 3}
   _damage: 3
   _reloadImage: {fileID: 4889151103782156243}
+  _shootSound: 2
 --- !u!1001 &4533488914015320378
 PrefabInstance:
   m_ObjectHideFlags: 0
